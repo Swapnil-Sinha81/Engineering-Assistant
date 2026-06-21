@@ -1,52 +1,65 @@
-Payment Service
+# Payment Service
 
-A payment service built in C++ to learn backend service design, object-oriented programming, service orchestration, transaction logging, and testing.
+A simple payment service built in **C++** to explore backend service design, object-oriented programming, transaction management, service orchestration, rollback handling, and testing.
 
-⸻
+## Features
 
-Business Objects
+* Create accounts
+* Deposit funds
+* Withdraw funds
+* Transfer funds between accounts
+* Transaction history and audit logging
+* Failure tracking
+* Rollback support for failed transfers
+* Service-level orchestration
+* Unit test driver
 
-Account
+---
 
-Represents a bank account and manages account-level operations.
+## Architecture
 
-Responsibilities:
+### Account
+
+Represents a bank account and manages account state.
+
+**Responsibilities**
 
 * Account creation
 * Balance management
-* Deposit operations
-* Withdraw operations
+* Deposits
+* Withdrawals
 * Account information retrieval
 
-Transaction
+### Transaction
 
-Represents an immutable record of an operation performed within the system.
+Immutable record of an operation performed in the system.
 
-Responsibilities:
+**Responsibilities**
 
 * Transaction tracking
-* Transaction status management
+* Status management
 * Failure reason tracking
 * Audit history generation
 
-AccountService
+### AccountService
 
-Coordinates workflows involving one or more accounts.
+Coordinates workflows across accounts.
 
-Responsibilities:
+**Responsibilities**
 
 * Account lookup
 * Deposit orchestration
 * Withdraw orchestration
 * Transfer orchestration
-* Transaction recording
+* Transaction logging
 * Rollback handling
 * System consistency
 
-⸻
+---
 
-Project Structure
+## Project Structure
 
+```text
 src/
 ├── models
 │   ├── Account.h
@@ -63,209 +76,135 @@ src/
 │
 └── build
     └── run_test.sh
+```
 
-⸻
+---
 
-Design Principles
+## Design Principles
 
-Separation of Concerns
+### Separation of Concerns
 
-Account
+**Account**
 
-Responsible for its own state.
+* Owns account state and balance operations
 
-Balance
-Owner
-Deposit
-Withdraw
+**Transaction**
 
-Transaction
+* Owns transaction history and audit data
 
-Responsible for audit history.
+**AccountService**
 
-Transaction ID
-Source Account
-Destination Account
-Status
-Failure Reason
+* Coordinates multi-account workflows and consistency
 
-AccountService
+---
 
-Responsible for coordinating workflows.
+## Transaction Logging
 
-Transfer
-Rollback
-Transaction Logging
-Account Lookup
+Every operation executed through `AccountService` creates a transaction record.
 
-⸻
+### Transaction Types
 
-Key Learnings
+* `DEPOSIT`
+* `WITHDRAW`
+* `TRANSFER`
 
-Header Files (.h)
+### Transaction Status
 
-Used for declarations.
+* `SUCCESS`
+* `FAILED`
 
-Examples:
+### Failure Reasons
 
-class Account;
-class Transaction;
-class AccountService;
+* `ACCOUNT_NOT_FOUND`
+* `SOURCE_ACCOUNT_NOT_FOUND`
+* `DESTINATION_ACCOUNT_NOT_FOUND`
+* `INSUFFICIENT_FUNDS`
+* `ROLLBACK_TRIGGERED`
 
-Purpose:
+---
 
-* Define interfaces
-* Separate declaration from implementation
-* Improve code organization
-
-⸻
-
-CPP Files (.cpp)
-
-Used for implementations.
-
-Examples:
-
-Account::deposit(...)
-Account::withdraw(...)
-AccountService::transfer(...)
-
-Purpose:
-
-* Implement business logic
-* Keep interfaces clean
-* Support modular compilation
-
-⸻
-
-Linker
-
-The linker combines implementations from multiple .cpp files into a single executable.
-
-Example:
-
-Account.cpp
-Transaction.cpp
-AccountService.cpp
-        ↓
-     Linker
-        ↓
- Executable
-
-⸻
-
-Executable
-
-The final runnable program generated after compilation and linking.
-
-Example:
-
-./test
-
-⸻
-
-Transaction Logging
-
-Every operation performed through AccountService is recorded as a transaction.
-
-Supported transaction types:
-
-DEPOSIT
-WITHDRAW
-TRANSFER
-
-Supported statuses:
-
-SUCCESS
-FAILED
-
-Example failure reasons:
-
-ACCOUNT_NOT_FOUND
-SOURCE_ACCOUNT_NOT_FOUND
-DESTINATION_ACCOUNT_NOT_FOUND
-INSUFFICIENT_FUNDS
-ROLLBACK_TRIGGERED
-
-⸻
-
-Rollback Handling
+## Rollback Support
 
 Transfers are treated as atomic operations.
 
-Example:
-
-Withdraw from Source Account
-        ↓
-Deposit to Destination Account
-        ↓
+```text
+Withdraw Source
+      ↓
+Deposit Destination
+      ↓
 Failure?
-        ↓
-Rollback Source Account
+      ↓
+Rollback Source
+```
 
-This ensures consistency across multiple account updates.
+This ensures account balances remain consistent when multi-step operations fail.
 
-⸻
+---
 
-Running Tests
+## Build & Run
 
-Build
+### Build
 
+```bash
 cmake -B build
 cmake --build build
+```
 
-Run
+### Run Tests
 
+```bash
 ./build/test-account-service
+```
 
-⸻
+---
 
-Test Script
+## Test Script
 
-File:
-
-build/run_test.sh
-
-Contents:
-
+```bash
 #!/bin/bash
+
 g++ \
 ../tests/test-account-service.cpp \
 ../models/Account.cpp \
 ../models/Transaction.cpp \
 ../services/AccountService.cpp \
 -o test
+
 ./test
+```
 
 Run:
 
+```bash
 chmod +x run_test.sh
 ./run_test.sh
+```
 
-⸻
+---
 
-Current Features
+## Learning Objectives
 
-* Create Account
-* Deposit Funds
-* Withdraw Funds
-* Transfer Funds
-* Transaction History
-* Failure Tracking
-* Rollback Support
-* Service-Level Orchestration
-* Unit Test Driver
+* C++ class design
+* Header vs implementation files
+* Object-oriented programming
+* Service orchestration
+* Transaction management
+* Rollback strategies
+* Unit testing
+* Build systems and linking
 
-⸻
+---
 
-Future Improvements
+## Future Enhancements
 
-* HTTP Routes
 * REST APIs
-* Persistent Storage
-* PostgreSQL Integration
-* Incident Generation
-* AI-Assisted Root Cause Analysis
-* Service Monitoring
-* Metrics Collection
-* Authentication & Authorization
+* HTTP routing
+* PostgreSQL integration
+* Persistent storage
+* Authentication & authorization
+* Metrics and monitoring
+* Incident management
+* AI-assisted root cause analysis
+
+```
+```

@@ -1,6 +1,6 @@
 # Payment Service
 
-A lightweight payment service built in C++ to explore:
+A payment service built to explore:
 
 - Object-Oriented Design
 - Service Layer Architecture

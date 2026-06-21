@@ -1,59 +1,69 @@
 # Payment Service
 
-A simple payment service built in **C++** to explore backend service design, object-oriented programming, transaction management, service orchestration, rollback handling, and testing.
+A lightweight payment service built in C++ to explore:
 
-## Features
-
-* Create accounts
-* Deposit funds
-* Withdraw funds
-* Transfer funds between accounts
-* Transaction history and audit logging
-* Failure tracking
-* Rollback support for failed transfers
-* Service-level orchestration
-* Unit test driver
+- Object-Oriented Design
+- Service Layer Architecture
+- Transaction Logging
+- Rollback & Consistency
+- Build Systems (CMake)
 
 ---
 
 ## Architecture
 
-### Account
+```text
+                +------------------+
+                |  AccountService  |
+                +------------------+
+                         |
+        +----------------+----------------+
+        |                                 |
+        v                                 v
++----------------+              +----------------+
+|    Account     |              |  Transaction   |
++----------------+              +----------------+
+| Balance State  |              | Audit History  |
+| Deposit        |              | Status         |
+| Withdraw       |              | Failure Reason |
++----------------+              +----------------+
+```
 
-Represents a bank account and manages account state.
+### Responsibilities
 
-**Responsibilities**
+| Component | Responsibility |
+|------------|---------------|
+| Account | Owns account state and balance operations |
+| Transaction | Stores transaction audit records |
+| AccountService | Coordinates workflows across accounts |
 
-* Account creation
-* Balance management
-* Deposits
-* Withdrawals
-* Account information retrieval
+---
 
-### Transaction
+## Supported Operations
 
-Immutable record of an operation performed in the system.
+```text
+Create Account
+Deposit
+Withdraw
+Transfer
+Transaction Logging
+Rollback
+```
 
-**Responsibilities**
+---
 
-* Transaction tracking
-* Status management
-* Failure reason tracking
-* Audit history generation
+## Transfer Flow
 
-### AccountService
-
-Coordinates workflows across accounts.
-
-**Responsibilities**
-
-* Account lookup
-* Deposit orchestration
-* Withdraw orchestration
-* Transfer orchestration
-* Transaction logging
-* Rollback handling
-* System consistency
+```text
+Source Withdraw
+       |
+       v
+Destination Deposit
+       |
+       +---- Success ----> Commit
+       |
+       +---- Failure ----> Rollback (Maintain Atomicity)
+```
 
 ---
 
@@ -61,96 +71,35 @@ Coordinates workflows across accounts.
 
 ```text
 src/
-├── models
+├── models/
 │   ├── Account.h
 │   ├── Account.cpp
 │   ├── Transaction.h
 │   └── Transaction.cpp
 │
-├── services
+├── services/
 │   ├── AccountService.h
 │   └── AccountService.cpp
 │
-├── tests
+├── tests/
 │   └── test-account-service.cpp
 │
-└── build
+└── build/
     └── run_test.sh
 ```
 
 ---
 
-## Design Principles
-
-### Separation of Concerns
-
-**Account**
-
-* Owns account state and balance operations
-
-**Transaction**
-
-* Owns transaction history and audit data
-
-**AccountService**
-
-* Coordinates multi-account workflows and consistency
-
----
-
-## Transaction Logging
-
-Every operation executed through `AccountService` creates a transaction record.
-
-### Transaction Types
-
-* `DEPOSIT`
-* `WITHDRAW`
-* `TRANSFER`
-
-### Transaction Status
-
-* `SUCCESS`
-* `FAILED`
-
-### Failure Reasons
-
-* `ACCOUNT_NOT_FOUND`
-* `SOURCE_ACCOUNT_NOT_FOUND`
-* `DESTINATION_ACCOUNT_NOT_FOUND`
-* `INSUFFICIENT_FUNDS`
-* `ROLLBACK_TRIGGERED`
-
----
-
-## Rollback Support
-
-Transfers are treated as atomic operations.
-
-```text
-Withdraw Source
-      ↓
-Deposit Destination
-      ↓
-Failure?
-      ↓
-Rollback Source
-```
-
-This ensures account balances remain consistent when multi-step operations fail.
-
----
-
-## Build & Run
-
-### Build
+## Build
 
 ```bash
 cmake -B build
 cmake --build build
 ```
 
-### Run Tests
+---
+
+## Run
 
 ```bash
 ./build/test-account-service
@@ -158,53 +107,39 @@ cmake --build build
 
 ---
 
-## Test Script
+## Example Transaction Log
 
-```bash
-#!/bin/bash
-
-g++ \
-../tests/test-account-service.cpp \
-../models/Account.cpp \
-../models/Transaction.cpp \
-../services/AccountService.cpp \
--o test
-
-./test
-```
-
-Run:
-
-```bash
-chmod +x run_test.sh
-./run_test.sh
+```text
+TxnId: 5
+SourceId: 2
+DestId: 3
+Type: TRANSFER
+Status: SUCCESS
+Amount: 500
 ```
 
 ---
 
-## Learning Objectives
+## Concepts Practiced
 
-* C++ class design
-* Header vs implementation files
-* Object-oriented programming
-* Service orchestration
-* Transaction management
-* Rollback strategies
-* Unit testing
-* Build systems and linking
+- Classes & Objects
+- Header / Implementation Separation
+- Service Layer Pattern
+- Transaction Management
+- Rollback Handling
+- Build & Linking
+- Testing
 
 ---
 
-## Future Enhancements
+## Roadmap
 
-* REST APIs
-* HTTP routing
-* PostgreSQL integration
-* Persistent storage
-* Authentication & authorization
-* Metrics and monitoring
-* Incident management
-* AI-assisted root cause analysis
-
-```
+- [x] Account Management
+- [x] Transaction Logging
+- [x] Rollback Support
+- [ ] HTTP Routes
+- [ ] REST APIs
+- [ ] Database Persistence
+- [ ] Incident Management
+- [ ] AI Root Cause Analysis
 ```
